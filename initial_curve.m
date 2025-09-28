@@ -1,22 +1,50 @@
-% Define the quantity range
-quantity = 0:100; % Example quantity from 0 to 100
+% Define the q range
+q = linspace(0.01, 5, 300); % Example q from 0 to 100
 
 % Define the total cost curve (example: quadratic cost function)
-total_cost = 5 + 2 * quantity + 0.05 * quantity.^2; % Example cost function
+total_cost = q.^2 +sqrt(q); 
 
 % Calculate average cost
-average_cost = total_cost ./ quantity; 
-average_cost(quantity == 0) = NaN; % Avoid division by zero
+avg_cost = total_cost ./ q; 
 
 % Calculate marginal cost (derivative of total cost)
-marginal_cost = gradient(total_cost, quantity);
+m_cost = gradient(total_cost, q);
+
+% Find the lowest point of the marginal cost curve
+[min_mc, idx] = min(m_cost);
+q_star = q(idx);
+y_star = min_mc;
+% Find the lowest point of the average cost curve
+[min_ac, idx] = min(avg_cost);
+q_bar = q(idx);
+y_bar = min_ac;
 
 % Plotting the curves
 figure;
 hold on;
-plot(quantity, total_cost, 'b', 'DisplayName', 'Total Cost');
-plot(quantity, average_cost, 'r', 'DisplayName', 'Average Cost');
-plot(quantity, marginal_cost, 'g', 'DisplayName', 'Marginal Cost');
+plot(q, total_cost, 'b', 'DisplayName', 'Total Cost');
+plot(q, avg_cost, 'r', 'DisplayName', 'avg Cost');
+plot(q, m_cost, 'g', 'DisplayName', 'm Cost');
+
+% Add vertical dashed lines that stop at the curves
+plot([q_bar, q_bar], [0, y_bar], '--k', 'LineWidth', 2, 'HandleVisibility', 'off');
+plot([q_star, q_star], [0, y_star], '--k', 'LineWidth', 2, 'HandleVisibility', 'off');
+
+% Customize the plot
+title('Fig. 2', 'FontSize', 14);
+xlabel('q', 'FontSize', 12);
+xlim([0, 2]);
+ylim([0, 5]);  % Adjust based on your data range
+
+% Add custom text labels at the bottom of the plot
+text(q_bar, -0.2, '$\bar{q}$', 'Interpreter', 'latex', 'FontSize', 12, ...
+     'HorizontalAlignment', 'center', 'VerticalAlignment', 'top');
+text(q_star, -0.2, '$q^*$', 'Interpreter', 'latex', 'FontSize', 12, ...
+     'HorizontalAlignment', 'center', 'VerticalAlignment', 'top');
+
+% Add legend
+legend('Location', 'best');
+
 hold off;
 
 % Adding labels and legend
